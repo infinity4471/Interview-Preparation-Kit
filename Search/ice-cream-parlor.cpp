@@ -4,45 +4,24 @@ using namespace std;
 
 vector<string> split_string(string);
 
-// Complete the minimumBribes function below.
-class BIT {
-    public:
-        BIT( int n ) {
-            N = n;
-            values.resize( N + 1 );
-        }
-        void add( int pos ) {
-            while( pos <= N ) {
-                values[ pos ]++;
-                pos += ( pos & -pos );
-            }
-        }
-        int sum( int pos ) {
-            int res = 0;
-            while( pos > 0 ) {
-                res += values[ pos ];
-                pos -= ( pos & -pos );
-            }
-            return res;
-        }
-    private:
-        vector< int > values;
-        int N;
-};
-
-void minimumBribes(vector<int> q) {
-    int ans = 0, n = q.size();
-    BIT tree( n );
-    for( int i = n - 1; i >= 0; i-- ) {
-        int cur_inv = tree.sum( q[ i ] );
-        if( cur_inv > 2 ) {
-            printf("Too chaotic\n");
-            return;
-        }
-        ans += cur_inv;
-        tree.add( q[ i ] );
+// Complete the whatFlavors function below.
+void whatFlavors(vector<int> cost, int money) {
+    vector< pair< int, int > > new_cost;
+    for( int i = 1; i <= cost.size(); i++ ) {
+        new_cost.push_back( make_pair( cost[ i - 1 ], i ) );
     }
-    printf("%d\n", ans );
+    sort( new_cost.begin(), new_cost.end() );
+    for( int i = 0, j = new_cost.size() - 1; i < j; ) {
+        if( new_cost[ i ].first + new_cost[ j ].first < money ) i++;
+        else if( new_cost[ i ].first + new_cost[ j ].first > money ) j--;
+        else {
+            if( new_cost[ i ].second > new_cost[ j ].second ) {
+                swap( new_cost[ i ], new_cost[ j ] );
+            }
+            printf("%d %d\n", new_cost[ i ].second, new_cost[ j ].second );
+            break;
+        }
+    }
 }
 
 int main()
@@ -52,24 +31,28 @@ int main()
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     for (int t_itr = 0; t_itr < t; t_itr++) {
+        int money;
+        cin >> money;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
         int n;
         cin >> n;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        string q_temp_temp;
-        getline(cin, q_temp_temp);
+        string cost_temp_temp;
+        getline(cin, cost_temp_temp);
 
-        vector<string> q_temp = split_string(q_temp_temp);
+        vector<string> cost_temp = split_string(cost_temp_temp);
 
-        vector<int> q(n);
+        vector<int> cost(n);
 
         for (int i = 0; i < n; i++) {
-            int q_item = stoi(q_temp[i]);
+            int cost_item = stoi(cost_temp[i]);
 
-            q[i] = q_item;
+            cost[i] = cost_item;
         }
 
-        minimumBribes(q);
+        whatFlavors(cost, money);
     }
 
     return 0;
@@ -103,4 +86,3 @@ vector<string> split_string(string input_string) {
 
     return splits;
 }
-
